@@ -3,14 +3,16 @@ using System;
 using Faucet.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Faucet.API.Migrations
 {
     [DbContext(typeof(FaucetDbContext))]
-    partial class FaucetDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210523223045_Add_Table_AdminEmail")]
+    partial class Add_Table_AdminEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

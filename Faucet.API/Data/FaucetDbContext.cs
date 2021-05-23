@@ -9,7 +9,10 @@ namespace Faucet.API.Data
 
         public DbSet<User> User { get; set; }
 
-        public DbSet<Transaction> Transaction { get; set; }        
+        public DbSet<Transaction> Transaction { get; set; }
+
+        public DbSet<AdminEmail> AdminEmail { get; set; }
+        
 
         public FaucetDbContext(DbContextOptions<FaucetDbContext> options) : base(options) { }
 

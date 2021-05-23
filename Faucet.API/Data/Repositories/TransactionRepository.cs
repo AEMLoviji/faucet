@@ -22,5 +22,19 @@ namespace Faucet.API.Data.Repositories
         {
             _faucetDbContext.Transaction.Add(transaction);
         }
+
+        public (DateTime lastClaimedAt, decimal totalClaimed) GetAdminReportInfo(DateTime date)
+        {
+            if (!_faucetDbContext.Transaction.Any())
+            {
+                return (DateTime.MinValue, 0);               
+            }
+
+            var lastClaimedAt = _faucetDbContext.Transaction.Max(_ => _.RequestedAt);
+            var totalClaimed = _faucetDbContext.Transaction.Where(_ => _.RequestedAt > date).Sum(_ => _.Amount);
+
+            return (lastClaimedAt, totalClaimed);
+        }
+
     }
 }

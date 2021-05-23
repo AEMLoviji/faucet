@@ -2,6 +2,7 @@ using Faucet.API.Data;
 using Faucet.API.Data.Repositories;
 using Faucet.API.Extensions;
 using Faucet.API.Jobs;
+using Faucet.API.MailClients;
 using Faucet.API.RateServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,10 +41,15 @@ namespace Faucet.API
             services.AddScoped<IBalanceRepository, BalanceRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<IAdminEmailRepository, AdminEmailRepository>();            
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             ConfigureScheduledJobs(services);
+
+            services.AddScoped<IEmailClient, EmailClient>();
+
+            services.Configure<EmailOptions>(Configuration.GetSection(nameof(EmailOptions)));
         }
 
         private void ConfigureScheduledJobs(IServiceCollection services)
