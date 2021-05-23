@@ -1,5 +1,7 @@
 using Faucet.API.Data;
 using Faucet.API.Data.Repositories;
+using Faucet.API.Extensions;
+using Faucet.API.Jobs;
 using Faucet.API.RateServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Quartz;
 using System;
 
 namespace Faucet.API
@@ -39,6 +42,24 @@ namespace Faucet.API
             services.AddScoped<ITransactionRepository, TransactionRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            ConfigureScheduledJobs(services);
+        }
+
+        private void ConfigureScheduledJobs(IServiceCollection services)
+        {
+            services
+                .AddQuartz(q =>
+                {
+                    q.UseMicrosoftDependencyInjectionScopedJobFactory();
+
+                    q.AddJobAndTrigger<BitcoinGrabberJob>(Configuration);
+                    q.AddJobAndTrigger<SendEmailToAdminJob>(Configuration);
+                })
+                .AddQuartzServer(options =>
+                {
+                    options.WaitForJobsToComplete = true;
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, FaucetDbContext dataContext)
