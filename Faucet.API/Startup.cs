@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Quartz;
 using System;
 
@@ -41,7 +42,7 @@ namespace Faucet.API
             services.AddScoped<IBalanceRepository, BalanceRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
-            services.AddScoped<IAdminEmailRepository, AdminEmailRepository>();            
+            services.AddScoped<IAdminEmailRepository, AdminEmailRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -50,6 +51,26 @@ namespace Faucet.API
             services.AddScoped<IEmailClient, EmailClient>();
 
             services.Configure<EmailOptions>(Configuration.GetSection(nameof(EmailOptions)));
+
+            ConfigureSwagger(services);
+        }
+
+        private static void ConfigureSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Faucet API",
+                    Description = "Faucet API - cryptocurrency reward system",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Elvin Asadov",
+                        Email = "aemloviji@gmail.com"
+                    },
+                });
+            });
         }
 
         private void ConfigureScheduledJobs(IServiceCollection services)
@@ -81,7 +102,12 @@ namespace Faucet.API
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Faucet API");
+                    c.RoutePrefix = "swagger";
+                });
 
             app.UseEndpoints(endpoints =>
             {
