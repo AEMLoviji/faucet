@@ -3,14 +3,16 @@ using System;
 using Faucet.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Faucet.API.Migrations
 {
     [DbContext(typeof(FaucetDbContext))]
-    partial class FaucetDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210523183332_Alter_Table_Transaction_Add_ForeignKey_To_User")]
+    partial class Alter_Table_Transaction_Add_ForeignKey_To_User
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,7 +39,7 @@ namespace Faucet.API.Migrations
                         {
                             Id = 1,
                             BitcoinsAmount = 0m,
-                            UpdatedAt = new DateTime(2021, 5, 23, 18, 55, 7, 59, DateTimeKind.Utc).AddTicks(7519)
+                            UpdatedAt = new DateTime(2021, 5, 23, 18, 33, 32, 236, DateTimeKind.Utc).AddTicks(7329)
                         });
                 });
 
@@ -45,12 +47,6 @@ namespace Faucet.API.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("AmountInUsd")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("RequestedAt")

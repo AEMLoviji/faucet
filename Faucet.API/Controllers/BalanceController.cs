@@ -1,4 +1,4 @@
-﻿using Faucet.API.Db;
+﻿using Faucet.API.Data.Repositories;
 using Faucet.API.Model;
 using Faucet.API.RateServices;
 using Microsoft.AspNetCore.Mvc;
@@ -26,14 +26,14 @@ namespace Faucet.API.Controllers
         [HttpGet]
         public async Task<Balance> Get()
         {
-            var bitcoinsCount = _balanceRepository.Get().BitcoinsCount;
+            var bitcoinsAmount = _balanceRepository.Get().BitcoinsAmount;
 
             var usdRate = await _blockchainRateService.GetUsdRateAsync();
 
             return new Balance()
             {
-                Btc = bitcoinsCount,
-                InUsd = bitcoinsCount * usdRate
+                Btc = bitcoinsAmount,
+                InUsd = ExchangeUtils.BtcToUsd(bitcoinsAmount, usdRate)
             };
         }
     }

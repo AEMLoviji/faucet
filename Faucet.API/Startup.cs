@@ -1,5 +1,5 @@
 using Faucet.API.Data;
-using Faucet.API.Db;
+using Faucet.API.Data.Repositories;
 using Faucet.API.RateServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +35,10 @@ namespace Faucet.API
             services.AddDbContext<FaucetDbContext>(x => x.UseSqlite(Configuration.GetConnectionString(FaucetDbConnectionStringName)));
 
             services.AddScoped<IBalanceRepository, BalanceRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, FaucetDbContext dataContext)

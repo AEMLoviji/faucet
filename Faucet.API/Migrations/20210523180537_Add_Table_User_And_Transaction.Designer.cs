@@ -3,14 +3,16 @@ using System;
 using Faucet.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Faucet.API.Migrations
 {
     [DbContext(typeof(FaucetDbContext))]
-    partial class FaucetDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210523180537_Add_Table_User_And_Transaction")]
+    partial class Add_Table_User_And_Transaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +24,7 @@ namespace Faucet.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("BitcoinsAmount")
+                    b.Property<decimal>("BitcoinsCount")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -36,8 +38,8 @@ namespace Faucet.API.Migrations
                         new
                         {
                             Id = 1,
-                            BitcoinsAmount = 0m,
-                            UpdatedAt = new DateTime(2021, 5, 23, 18, 55, 7, 59, DateTimeKind.Utc).AddTicks(7519)
+                            BitcoinsCount = 0m,
+                            UpdatedAt = new DateTime(2021, 5, 23, 18, 5, 37, 22, DateTimeKind.Utc).AddTicks(9410)
                         });
                 });
 
@@ -47,19 +49,15 @@ namespace Faucet.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("AmountInUsd")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("RequestedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Transaction");
                 });
@@ -79,6 +77,15 @@ namespace Faucet.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("Faucet.API.Data.Transaction", b =>
+                {
+                    b.HasOne("Faucet.API.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
