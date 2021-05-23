@@ -2,23 +2,30 @@
 using Faucet.API.Model;
 using Faucet.API.RateServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Faucet.API.Controllers
 {
     [ApiController]
-    [Route("api/balance")]
-    public class BalanceController : ControllerBase
+    [Route("api/claim")]
+    public class ClaimController : ControllerBase
     {
+        private readonly ILogger<BalanceController> _logger;
         private readonly IBalanceRepository _balanceRepository;
         private readonly IBlockchainRateService _blockchainRateService;
 
-        public BalanceController
+        public ClaimController
         (
+            ILogger<BalanceController> logger,
             IBalanceRepository balanceRepository,
             IBlockchainRateService blockchainRateService
         )
         {
+            _logger = logger;
             _balanceRepository = balanceRepository;
             _blockchainRateService = blockchainRateService;
         }

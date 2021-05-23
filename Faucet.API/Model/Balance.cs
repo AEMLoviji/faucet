@@ -4,6 +4,6 @@
     {
         public decimal Btc { get; set; }
 
-        public decimal Usd { get; set; }
+        public decimal InUsd { get; set; }
     }
 }
