@@ -18,15 +18,19 @@ namespace Faucet.API
 {
     public class Startup
     {
+        private const string TestEnvironmentName = "Test";
         private const string BlockchainApiBaseUrl = "https://blockchain.info/";
-        private const string FaucetDbConnectionStringName = "FaucetDbSqliteConnection";
+        private const string FaucetDbConnectionStringSectionName = "FaucetDbSqliteConnection";
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            CurrentEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
+
+        public IWebHostEnvironment CurrentEnvironment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -37,7 +41,8 @@ namespace Faucet.API
                 c.BaseAddress = new Uri(BlockchainApiBaseUrl);
             });
 
-            services.AddDbContext<FaucetDbContext>(x => x.UseSqlite(Configuration.GetConnectionString(FaucetDbConnectionStringName)));
+            services.AddDbContext<FaucetDbContext>(x => 
+                x.UseSqlite(Configuration.GetConnectionString(FaucetDbConnectionStringSectionName)));
 
             services.AddScoped<IBalanceRepository, BalanceRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
@@ -46,7 +51,10 @@ namespace Faucet.API
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            ConfigureScheduledJobs(services);
+            if (!CurrentEnvironment.IsEnvironment(TestEnvironmentName))
+            {
+                ConfigureScheduledJobs(services);
+            }
 
             services.AddScoped<IEmailClient, EmailClient>();
 
@@ -55,6 +63,31 @@ namespace Faucet.API
             ConfigureSwagger(services);
         }
 
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, FaucetDbContext dataContext)
+        {
+            dataContext.Database.Migrate();
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseSwagger()
+                .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Faucet API");
+                    c.RoutePrefix = "swagger";
+                });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
         private static void ConfigureSwagger(IServiceCollection services)
         {
             services.AddSwaggerGen(options =>
@@ -87,32 +120,6 @@ namespace Faucet.API
                 {
                     options.WaitForJobsToComplete = true;
                 });
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, FaucetDbContext dataContext)
-        {
-            dataContext.Database.Migrate();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseSwagger()
-                .UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Faucet API");
-                    c.RoutePrefix = "swagger";
-                });
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
         }
     }
 }
