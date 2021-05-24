@@ -13,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Quartz;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace Faucet.API
 {
@@ -21,6 +23,15 @@ namespace Faucet.API
         private const string TestEnvironmentName = "Test";
         private const string BlockchainApiBaseUrl = "https://blockchain.info/";
         private const string FaucetDbConnectionStringSectionName = "FaucetDbSqliteConnection";
+
+        private static string XmlCommentsDocumentPath
+        {
+            get
+            {
+                var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                return Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+            }
+        }
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
@@ -103,6 +114,8 @@ namespace Faucet.API
                         Email = "aemloviji@gmail.com"
                     },
                 });
+
+                options.IncludeXmlComments(XmlCommentsDocumentPath);
             });
         }
 

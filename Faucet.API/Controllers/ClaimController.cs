@@ -1,6 +1,7 @@
 ﻿using Faucet.API.Data;
 using Faucet.API.Data.Repositories;
 using Faucet.API.RateServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -47,7 +48,25 @@ namespace Faucet.API.Controllers
             _blockchainRateService = blockchainRateService;
         }
 
+        /// <summary>
+        ///     Claim BTC to user by a given email.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /api/claim?email=:email
+        ///
+        /// </remarks>
+        /// <param name="email">The email</param>
+        /// <response code="400">If email is not provided</response>         
+        /// <response code="403">If system does not have required amount BTC</response>
+        /// <response code="429">If user tries to buy BTC more than once within 24h</response>
+        /// <response code="200">If user claimed BTC</response>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Claim(string email)
         {
             if (string.IsNullOrWhiteSpace(email))

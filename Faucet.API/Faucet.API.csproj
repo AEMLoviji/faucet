@@ -5,6 +5,14 @@
     <UserSecretsId>2a7cedf1-3ee2-49e0-a204-7bee7a365826</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>obj\Debug\netcoreapp3.1\Faucet.API.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>obj\Release\netcoreapp3.1\Faucet.API.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.12.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.6" />
